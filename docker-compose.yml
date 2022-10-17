@@ -1,0 +1,36 @@
+﻿version: '3.4'
+
+networks:
+  xmassignmentapi-dev:
+    driver: bridge 
+
+services:
+  xmassignmentapi:
+    image: xmassignmentapi:latest
+    depends_on:
+      - "postgres_db"
+    build:
+      context: .
+      dockerfile: XmAssignment.API/Dockerfile
+    ports:
+      - "8000:80"  
+    environment:
+      DB_CONNECTION_STRING: "host=host.docker.internal;port=49155;database=db_BitcoinData;username=postgres;password=postgrespw"
+    networks:
+      - xmassignmentapi-dev  
+  
+  postgres_db:
+    image: postgres:latest
+    ports:
+      - "49155"
+    restart: always
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgrespw"
+      POSTGRES_DB: "db_BitcoinData"
+    networks:
+      - xmassignmentapi-dev
+volumes:
+  db_volume:
